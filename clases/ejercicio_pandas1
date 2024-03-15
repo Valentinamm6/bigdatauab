@@ -1,0 +1,50 @@
+
+import pandas as pd
+
+# Datos iniciales
+notes = [1, 6, 8, 9, 10, 6, 5]
+alumnes = ["Jaume", "Carles", "Cristina", "Josep", "Rafael", "Agnès", "Marta"]
+cognoms = ["Tort", "Soldevila", "Luna", "Muñoz", "Fernandez", "Hernandez", "Llopart"]
+
+# Creamos un DataFrame vacío
+data = pd.DataFrame()
+
+# Agregamos los nombres y apellidos de los alumnos al DataFrame
+data['Nombre y apellidos'] = [f"{nombre} {apellido}" for nombre, apellido in zip(alumnes, cognoms)]
+
+# Agregamos las notas de los alumnos al DataFrame
+data['Nota'] = notes
+
+# Sumamos 1 punto a cada nota sin exceder el 10
+data['Nota'] = data['Nota'] + 1
+data['Nota'] = data['Nota'].apply(lambda x: min(x, 10))
+
+# Definimos una función para asignar la nota en texto según las condiciones dadas
+def asignar_nota_texto(nota):
+    if nota < 5:
+        return 'suspendido'
+    elif nota >= 5 and nota <= 6:
+        return 'aprobado'
+    elif nota > 6 and nota < 7:
+        return 'bien'
+    elif nota >= 7 and nota < 9:
+        return 'notable'
+    elif nota >= 9 and nota < 10:
+        return 'Excelente'
+    else:
+        return 'matrícula de honor'
+
+# Aplicamos la función a la columna 'Nota' y creamos la columna 'Nota en texto'
+data['Nota en texto'] = data['Nota'].apply(asignar_nota_texto)
+
+# Calculamos la mediana del grupo
+mediana_grupo = data['Nota'].median()
+
+# Calculamos la diferencia de nota respecto a la mediana del grupo y la agregamos al DataFrame
+data['Diferencia de nota respecto a la mediana del grupo'] = data['Nota'] - mediana_grupo
+
+# Calculamos la diferencia de nota en porcentaje respecto a la mediana del grupo y la agregamos al DataFrame
+data['Diferencia de nota (expresada en porcentaje) respecto a la mediana del grupo'] = ((data['Nota'] - mediana_grupo) / mediana_grupo) * 100
+
+# Guardamos el DataFrame como un archivo CSV
+data.to_csv('datos_alumnos.csv', index=False)
