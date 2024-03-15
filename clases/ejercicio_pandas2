@@ -1,0 +1,30 @@
+import pandas as pd
+
+df = pd.read_excel ("dataset.xlsx")
+
+#df["engagement"] = df["likeCount"] + df["commentCount"] #crear una nueva columna y ponerle un valor
+
+# Calculamos el promedio de espectadores, comentarios y likes del canal
+
+promedio_espectadores = df["viewCount"].mean()
+promedio_comentarios = df["commentCount"].mean()
+promedio_likes = df["likeCount"].mean()
+
+# Calculamos la desviación absoluta de cada vídeo sobre el promedio
+df["average_espectadores"] = abs(df["viewCount"] - promedio_espectadores)
+df["average_comentarios"] = abs(df["commentCount"] - promedio_comentarios)
+df["average_likes"] = abs(df["likeCount"] - promedio_likes)
+
+# Calculamos la desviación porcentual de cada vídeo sobre el promedio
+df["Desviacion_espectadores"] = (df["average_espectadores"] / promedio_espectadores) * 100
+df["Desviacion_comentarios"] = (df["average_comentarios"] / promedio_comentarios) * 100
+df["Desviacion_likes"] = (df["average_likes"] / promedio_likes) * 100
+
+df = df.drop(['channelId', "categoryId", "channelTitle", "tags", "publishedAt" , "blocked_at"],axis=1 )
+print(df.columns)
+
+index= df["viewCount"].idmax()
+
+print(df.iloc[[index]])
+
+#df.to_excel("final2.xlsx")
