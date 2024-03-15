@@ -1,0 +1,58 @@
+import spotipy
+import json
+from spotipy.oauth2 import SpotifyClientCredentials
+import pandas as pd
+import glob
+
+"""api_client_id = ""  # desde mi dashboard de spotify
+api_client_secret = ""
+
+spotify = spotipy.Spotify(client_credentials_manager=SpotifyClientCredentials(api_client_id, api_client_secret))
+
+playlist_id = ""
+
+offset= 0
+playlist_list = ["1U7zVnmYc402tlRtCUxNAY", "3vVAkSEGmcDMieRUi9Nft7", "37i9dQZEVXbMDoHDwVN2tF"]
+#llista_artistes = []
+
+def get_playlist(playlist, offset):
+    resposta = spotify.playlist_items(playlist, offset=offset)
+    with open(f'{playlist}-{offset}.json', 'w', encoding='utf-8') as f:
+        json.dump(resposta, f, ensure_ascii=False, indent=4)
+
+    if resposta["next"] == None:
+        print("Final")
+        pass
+    else:
+        offset = offset+100
+        print("Nova petició")
+        get_playlist(playlist, offset)
+
+for playlist in playlist_list:
+    offset = 0
+    get_playlist(playlist, offset)
+
+
+
+"""
+
+files= glob.glob("*.json") #almacena todos los archivos json en una variable
+list_tracks =[]
+
+for file in files:
+    with open(file) as f:
+        d = json.load(f)
+        print(d)
+        tracks= d["items"]
+        for track in tracks:
+            track_dick = {}
+            track["popularity"] = track["track"]["popularity"]
+            track["name"] = track["track"]["name"]
+            tracks["artist_name"] = track["artists"][0]["name"]
+            tracks["duracion_ms"] = track["track"]["duration_ms"]
+            list_tracks.append(track_dick)
+
+df = pd.DataFrame.from_dict(list_tracks)
+print(df)
+"""df.to_csv("graf.csv",sep=",",index=False)"""
+
