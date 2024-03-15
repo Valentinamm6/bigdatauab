@@ -1,0 +1,62 @@
+import spotipy
+from spotipy.oauth2 import SpotifyClientCredentials
+import json
+import pandas as pd
+
+api_client_id = ""
+api_client_secret = ""
+
+spotify = spotipy.Spotify(client_credentials_manager=SpotifyClientCredentials(api_client_id,api_client_secret))
+
+artista_id = "7ltDVBr6mKbRvohxheJ9h1"
+
+lista_artistas= []
+
+def get_related(artist_id):
+    respuesta = spotify.artist_related_artists(artista_id)
+    return respuesta
+
+result = get_related(artista_id)
+
+
+lista_de_relacionados = []
+
+for artist in result["artists"]:
+    artista = {}
+    artista["nombre"] = artist["name"]
+    artista["destino"] = "rosalia"
+    lista de_relacionados.append(artista)
+    print(lista_de_relacionados)
+
+
+"""with open('data_2.json', 'w', encoding='utf-8') as f :
+    json.dump(respuesta , f, indent=4)
+
+artistas = respuesta["artists"]
+
+
+
+for a in artistas:
+    name= a["name"]
+    followers= a["followers"]["total"]
+    link = a["external_urls"]["spotify"]
+    id= a["id"]
+
+
+    frame = pd.DataFrame({
+        "semilla": artista_id,
+        "name": name,
+        "followers": followers,
+        "link": link,
+        "id": id,
+    }, index=[0])
+    lista_artistas.append(frame)
+
+
+final = pd.concat(lista_artistas)
+
+print(final)
+final.to_excel("dataset2.xlsx")
+print("done")"""
+
+
