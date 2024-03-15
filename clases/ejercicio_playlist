@@ -1,0 +1,40 @@
+
+import spotipy
+import json
+from spotipy.oauth2 import SpotifyClientCredentials
+import pandas as pd
+
+api_client_id = "" # desde  dashboard de spotify
+api_client_secret = ""
+
+spotify = spotipy.Spotify(client_credentials_manager=SpotifyClientCredentials(api_client_id,api_client_secret))
+
+playlist_id = "37i9dQZF1E4BeopFQF8RKm"
+
+llista_playlist = []
+def playlist_items(playlist_id):
+    resposta = spotify.playlist_items(playlist_id)
+    return resposta
+
+def get_related(artist_id):
+    resposta = spotify.artist_related_artists(artist_id)
+    return resposta
+
+result = playlist_items(playlist_id)
+
+data=[]
+
+for item in result['items']:
+    track = item['track']
+    artists = track['artists']
+    for artist in artists:
+        artist_name = artist['name']
+        artist_id = artist['id']
+        related_artist = get_related(artist_id)
+        for related_artist in related_artist['artists']:
+            related_artist_name = related_artist['name']
+            related_artist_id = related_artist['id']
+            data.append({'Playlist Artist': artist_name, 'Related Artist': related_artist_name,
+                         'Related Artist ID': related_artist_id})
+df = pd.DataFrame(data)
+df.to_csv("graf.csv",sep=",",index=False)
