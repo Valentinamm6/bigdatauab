@@ -1,0 +1,88 @@
+# minar tablas de wikipedia
+
+### Llibreries a instal·lar #################
+# pip install beautifulsoup4                #
+# pip install requests -> ya esta en el core de python                    #
+# pip install spotipy                       #
+# pip install lxml                          #
+# pip install openpyxl                      #
+#############################################
+
+import requests
+from bs4 import BeautifulSoup
+import pandas as pd
+import time
+import glob
+import json
+from spotipy.oauth2 import SpotifyClientCredentials
+import spotipy
+
+rango = range(2000, 2024, 1)
+
+
+client_id=
+client_secret=
+
+client_credentials_manager = SpotifyClientCredentials(client_id=client_id, client_secret=client_secret)
+
+sp = spotipy.Spotify(client_credentials_manager=client_credentials_manager)
+
+
+
+def extract_wiki (rango):
+    for r in rango:
+        try:
+            respuesta = requests.get(f"https://es.wikipedia.org/wiki/Festival_de_la_Canci%C3%B3n_de_Eurovisi%C3%B3n_{r}")
+            codigo_web = respuesta.text
+
+            soup = BeautifulSoup(codigo_web,'html.parser')  # identifica el contenido y lo convierte en objetos para encontrar información
+            final = soup.find('span', id='Final')
+            tabla = final.find_next("table")  # Buscamos la tabla después del elemento <span>
+            df = pd.read_html(str(tabla))[0]  # convertirlo para se pueda trabajar en excel, se debe convertir a un string
+            df.to_excel(f"final-{r}.xlsx", index=False)
+            print (f"todo bien en {r}")
+            time.sleep(1)
+        except AttributeError:
+            print(f"problema en {r}")
+
+#extract_wiki(rango)
+
+def juntar ():
+    filas = glob.glob("*.xlsx")
+
+    print(filas)
+
+    lista_dfs = []
+
+    for f in filas:
+        df = pd.read_excel(f)
+        any = f.split("-")[1].split(".")[0]
+        df["año"] = any
+        df.columns.values[2] = "cantante"
+        df.columns.values[5] = "Puntos"
+        df.columns.values[0] = "N"
+
+        lista_dfs.append(df)
+
+    final_df = pd.concat(lista_dfs)
+    final_df.to_excel("final-final.xlsx", index=False)
+    print(final_df)
+
+#juntar()
+
+df = pd.read_excel("final-final.xlsx")
+print(df)
+
+for index,row in df.iterrows():
+    cantante = row["cantante"]
+    song= row["Canción"]
+    año = row["año"]
+    q = f"{song} {cantante} Eurovisión "
+    print(q)
+    respuesta = sp.search(q, limit=10, offset=0, type='track', market=None)
+    respuesta["query"] = q
+
+    with open('data.json', 'w', encoding='utf-8') as f:
+        json.dump(respuesta, f, ensure_ascii=False, indent=4)
+    print("fet")
+    time.sleep(15)
